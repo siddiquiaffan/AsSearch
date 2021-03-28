@@ -1,0 +1,30 @@
+  
+{
+    "name": "Ecommerce Search",
+    "description": "A very simple Telegram bot to get search results from variuos sites.",
+    "keywords": [
+      "telegram",
+      "ecommerce",
+      "amazon-search",
+      "flipkart-search"
+    ],
+    "repository": "https://github.com/AffanTheBest/AsSearch",
+    "website": "https://t.me/AffanTheBest",
+    "scripts": {
+      "worker": "npm start"
+    },
+    "env": {
+      "BOT_TOKEN": {
+        "description": "Enter your Telegram bot token. Get it from https://t.me/BotFather",
+        "required": true
+      }
+    },
+    "addons": [
+      {
+        "plan": "heroku-postgresql",
+        "options": {
+          "version": "12"
+        }
+      }
+    ]
+  }
