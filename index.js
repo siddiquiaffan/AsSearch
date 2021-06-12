@@ -1,7 +1,7 @@
 const axios = require("axios");
-const { JSDOM } = require("jsdom");
 const { Telegraf } = require("telegraf");
 const {BOT_TOKEN} = require("./config");
+const amazon = require("./modules/amazon");
 
 const default_btn = [
   { text: "Join Channel", url: "https://t.me/asprojects" },
@@ -95,5 +95,39 @@ bot.command("flpkrt", (ctx) => {
     })
 })
 
+bot.on('inline_query', async(ctx) => {
+  if(ctx.inlineQuery.query && ctx.inlineQuery.query.length > 2) {
+    const apiUrl = "https://amznsearch.vercel.app/api/?query=" + ctx.inlineQuery.query
+    const res = await axios.get(apiUrl)
+    const result = await res.data
+    let products = []
+    if(result.length > 0){
+      await result.forEach(({productName, productImage, productPrice, productLink}, index) => (
+        products.push({
+          type: 'article',
+          id: index,
+          title: productName,
+          description: productPrice,
+          thumb_url: productImage,
+          input_message_content: {
+            message_text: `Name: ${'`'+productName+'`'} \nPrice: ${'`'+productPrice+'`'} \nLink: [AMAZON LINK](${productLink})`,
+            disable_web_page_preview: true,
+            parse_mode: 'markdown'
+          }
+        })
+      ))
+      return await ctx.answerInlineQuery(products)
+    }else{
+      return await ctx.answerInlineQuery([{
+        type: 'article',
+        id: 1,
+        title: 'Searching.. Please wait',
+        input_message_content:{
+          message_text: 'PLease click on result after searching.'
+        }
+      }])
+    }
+  }
+})
 
-bot.launch();
+bot.launch().then(() => console.log('Bot launched'));
