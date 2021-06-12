@@ -32,7 +32,7 @@ bot.help((ctx) =>
   ctx.replyWithMarkdown(
     "Hey " +
       ctx.message.from.first_name +
-      ", Welcome! Happy to help you.\n\n`/help` : Get this Message. \n`/amzn `: Search on Amazon.(Eg. `/amzn Macbook`) \n`/flpkrt `: Search on Flipkart.(Eg. `/flpkrt Macbook`)\nType `@AsSearchBot` in chat input to search inline. (Eg. `@AsSearchBot Macbook`)\n\nFor more help join support Group.",
+      ", Welcome! Happy to help you.\n\n`/help` : Get this Message. \n`/amzn `: Search on Amazon.(Eg. `/amzn Macbook`) \n`/flpkrt `: Search on Flipkart.(Eg. `/flpkrt Macbook`)\nType `@AsSearchBot` in chat input to search inline. (Eg. `@AsSearchBot Macbook`)\n\n/donate - Donate to developer.\n\nFor more help join support Group.",
     {
       reply_to_message_id: ctx.update.message.message_id,
       allow_sending_without_reply: true,
@@ -44,6 +44,23 @@ bot.help((ctx) =>
   )
 );
 //! Help Message Ends.
+
+//! Donate Command
+bot.command('donate', async(ctx) => {
+  const donate_btns = [
+    {text: 'Ko-fi', url: 'https://ko-fi.com/affanthebest'},
+    {text: 'Paypal', url: 'https://paypal.me/affanthebest'}
+  ]
+  ctx.replyWithMarkdown('Thanks for showing intrest in donating. Remember every donation matters!\n\nYou can donate me by using following links:\nPaypal: https://paypal.me/affanthebest\nKo-fi - https://ko-fi.com/affanthebest \n\nUPI - `siddiquiaffan201@okaxis`\n\nFor any other methods contact @AffanTheBest personally.',
+  {  
+    reply_to_message_id: ctx.update.message.message_id,
+    allow_sending_without_reply: true,
+    disable_web_page_preview: true,
+    reply_markup: {
+      inline_keyboard: [donate_btns],
+    },
+  });
+})
 
 //! /AMZN Command.
 bot.command("amzn", (ctx) => {
