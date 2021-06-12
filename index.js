@@ -1,7 +1,6 @@
 const axios = require("axios");
 const { Telegraf } = require("telegraf");
 const {BOT_TOKEN} = require("./config");
-const amazon = require("./modules/amazon");
 
 const default_btn = [
   { text: "Join Channel", url: "https://t.me/asprojects" },
