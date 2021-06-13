@@ -120,21 +120,19 @@ bot.on('inline_query', async(ctx) => {
     const apiUrl = "https://amznsearch.vercel.app/api/?query=" + ctx.inlineQuery.query
     const res = await axios.get(apiUrl)
     const result = await res.data
-    let products = []
+    const genArticle = (id, title, description, thumb_url, message_text) => ({
+      type: 'article', id, title, description, thumb_url, input_message_content:{
+        message_text, disable_web_page_preview: true, parse_mode: 'markdown'}
+    })
     if(result.length > 0){
+      let allProducts = "Search results for " + "`" + ctx.inlineQuery.query + "`.\n\n";
+      result.map((data) => {
+        allProducts += "Name: `"+ data.productName +"` \nPrice: `" + data.productPrice + "` \nLink: [AMAZON LINK](" + data.productLink +")\n\n";
+      });
+      allProducts += "Search results by @AsSearchBot.";
+      let products = [genArticle(0, 'All results', 'Send all search results', '', allProducts)]
       await result.forEach(({productName, productImage, productPrice, productLink}, index) => (
-        products.push({
-          type: 'article',
-          id: index,
-          title: productName,
-          description: productPrice,
-          thumb_url: productImage,
-          input_message_content: {
-            message_text: `Name: ${'`'+productName+'`'} \nPrice: ${'`'+productPrice+'`'} \nLink: [AMAZON LINK](${productLink})`,
-            disable_web_page_preview: true,
-            parse_mode: 'markdown'
-          }
-        })
+        products.push(genArticle(index+1, productName, productPrice, productImage, `Name: ${'`'+productName+'`'} \nPrice: ${'`'+productPrice+'`'} \nLink: [AMAZON LINK](${productLink})`))
       ))
       return await ctx.answerInlineQuery(products)
     }else{
