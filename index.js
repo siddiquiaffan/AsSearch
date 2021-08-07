@@ -132,7 +132,7 @@ bot.on('inline_query', async(ctx) => {
       allProducts += "Search results by @AsSearchBot.";
       let products = [genArticle(0, 'All results', 'Send all search results', '', allProducts)]
       await result.forEach(({productName, productImage, productPrice, productLink}, index) => {
-        if(index < 50){
+        if(index < 49){
           products.push(genArticle(index+1, productName, productPrice, productImage, `Name: ${'`'+productName+'`'} \nPrice: ${'`'+productPrice+'`'} \nLink: [AMAZON LINK](${productLink})`))
         }
       })
