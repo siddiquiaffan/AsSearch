@@ -70,9 +70,9 @@ bot.command("amzn", (ctx) => {
     .get("https://amznsearch.vercel.app/api/?query=" + query)
     .then((response) => {
       result += "Search results for " + "`" + query + "`.\n\n";
-      response.data.map((data) => {
-        result += "Name: `"+ data.productName +"` \nPrice: `" + data.productPrice + "` \nLink: [AMAZON LINK](" + data.productLink +")\n\n";
-      });
+      for(i=0; i<10; i++){
+        result += "Name: `"+ response.data[i].productName +"` \nPrice: `" + response.data[i].productPrice + "` \nLink: [AMAZON LINK](" + response.data[i].productLink +")\n\n";
+      }
       result += "Search results by @AsSearchBot.";
       ctx.replyWithMarkdown(result, {
           reply_to_message_id: ctx.update.message.message_id,
@@ -80,7 +80,7 @@ bot.command("amzn", (ctx) => {
           disable_web_page_preview: true,
         }
       );
-    });
+    })
 })
 
 //! FLpKRT Command
@@ -126,14 +126,16 @@ bot.on('inline_query', async(ctx) => {
     })
     if(result.length > 0){
       let allProducts = "Search results for " + "`" + ctx.inlineQuery.query + "`.\n\n";
-      result.map((data) => {
-        allProducts += "Name: `"+ data.productName +"` \nPrice: `" + data.productPrice + "` \nLink: [AMAZON LINK](" + data.productLink +")\n\n";
-      });
+      for(i=0; i<10; i++){
+        allProducts += "Name: `"+ result[i].productName +"` \nPrice: `" + result[i].productPrice + "` \nLink: [AMAZON LINK](" + result[i].productLink +")\n\n";
+      }
       allProducts += "Search results by @AsSearchBot.";
       let products = [genArticle(0, 'All results', 'Send all search results', '', allProducts)]
-      await result.forEach(({productName, productImage, productPrice, productLink}, index) => (
-        products.push(genArticle(index+1, productName, productPrice, productImage, `Name: ${'`'+productName+'`'} \nPrice: ${'`'+productPrice+'`'} \nLink: [AMAZON LINK](${productLink})`))
-      ))
+      await result.forEach(({productName, productImage, productPrice, productLink}, index) => {
+        if(index < 50){
+          products.push(genArticle(index+1, productName, productPrice, productImage, `Name: ${'`'+productName+'`'} \nPrice: ${'`'+productPrice+'`'} \nLink: [AMAZON LINK](${productLink})`))
+        }
+      })
       return await ctx.answerInlineQuery(products)
     }else{
       return await ctx.answerInlineQuery([{
@@ -146,6 +148,6 @@ bot.on('inline_query', async(ctx) => {
       }])
     }
   }
-})
+});
 
-bot.launch().then(() => console.log('Bot launched'));
+bot.launch().then(() => console.log('Bot launched'))
