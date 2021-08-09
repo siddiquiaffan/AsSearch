@@ -124,7 +124,7 @@ bot.on('inline_query', async(ctx) => {
       type: 'article', id, title, description, thumb_url, input_message_content:{
         message_text, disable_web_page_preview: true, parse_mode: 'markdown'}
     })
-    if(result.length > 0){
+    if(result.length > 0 && result[0] != null){
       let allProducts = "Search results for " + "`" + ctx.inlineQuery.query + "`.\n\n";
       for(i=0; i<10; i++){
         allProducts += "Name: `"+ result[i].productName +"` \nPrice: `" + result[i].productPrice + "` \nLink: [AMAZON LINK](" + result[i].productLink +")\n\n";
@@ -141,7 +141,7 @@ bot.on('inline_query', async(ctx) => {
       return await ctx.answerInlineQuery([{
         type: 'article',
         id: 1,
-        title: 'Searching.. Please wait',
+        title: 'Searching.. Please wait. Or try again later.',
         input_message_content:{
           message_text: 'PLease click on result after searching.'
         }
