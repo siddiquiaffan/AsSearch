@@ -63,24 +63,27 @@ bot.command('donate', async(ctx) => {
 })
 
 //! /AMZN Command.
-bot.command("amzn", (ctx) => {
-  const query = ctx.message.text.split("/amzn ")[1];
-  let result = "";
-  axios
-    .get("https://amznsearch.vercel.app/api/?query=" + query)
-    .then((response) => {
-      result += "Search results for " + "`" + query + "`.\n\n";
-      for(i=0; i<10; i++){
-        result += "Name: `"+ response.data[i].productName +"` \nPrice: `" + response.data[i].productPrice + "` \nLink: [AMAZON LINK](" + response.data[i].productLink +")\n\n";
-      }
+bot.command("amzn", async(ctx) => {
+  try{
+    const query = ctx.message.text.split("/amzn ")[1];
+    console.log(query)
+    const res = await axios.get("https://amznsearch.vercel.app/api/?query=" + query);
+    if(res.data.result.length > 0){
+      let result = "Search results for " + "`" + query + "`.\n\n";
+      res.data.result.map((product, i) => i<=10 ?  result += `Name: ${product.name} \nPrice: ${product.price} \nLink: [AMAZON LINK](${product.link}?tag=affanthebest-21)\n` : null);
       result += "Search results by @AsSearchBot.";
       ctx.replyWithMarkdown(result, {
-          reply_to_message_id: ctx.update.message.message_id,
+          reply_to_message_id: ctx.message.message_id,
           allow_sending_without_reply: true,
           disable_web_page_preview: true,
         }
       );
-    })
+    }else{
+      ctx.replyWithMarkdown("No results found for " + "`" + query + "`\n\nPlease try again after sometime later.", {reply_to_message_id: ctx.message.message_id});
+    }
+  }catch(err){
+    ctx.replyWithMarkdown("Something went wrong. Please try again later.", {reply_to_message_id: ctx.message.message_id});
+  }
 })
 
 //! FLpKRT Command
@@ -119,7 +122,7 @@ bot.on('inline_query', async(ctx) => {
   if(ctx.inlineQuery.query && ctx.inlineQuery.query.length > 2) {
     const apiUrl = "https://amznsearch.vercel.app/api/?query=" + ctx.inlineQuery.query
     const res = await axios.get(apiUrl)
-    const result = await res.data
+    const result = await res.data.result
     const genArticle = (id, title, description, thumb_url, message_text) => ({
       type: 'article', id, title, description, thumb_url, input_message_content:{
         message_text, disable_web_page_preview: true, parse_mode: 'markdown'}
@@ -127,13 +130,13 @@ bot.on('inline_query', async(ctx) => {
     if(result.length > 0 && result[0] != null){
       let allProducts = "Search results for " + "`" + ctx.inlineQuery.query + "`.\n\n";
       for(i=0; i<10; i++){
-        allProducts += "Name: `"+ result[i].productName +"` \nPrice: `" + result[i].productPrice + "` \nLink: [AMAZON LINK](" + result[i].productLink +")\n\n";
+        allProducts += "Name: `"+ result[i].name +"` \nPrice: `" + result[i].price + "` \nLink: [AMAZON LINK](" + result[i].link +"?tag=affanthebest-21)\n\n";
       }
       allProducts += "Search results by @AsSearchBot.";
       let products = [genArticle(0, 'All results', 'Send all search results', '', allProducts)]
-      await result.forEach(({productName, productImage, productPrice, productLink}, index) => {
+      await result.forEach(({name, image, price, link}, index) => {
         if(index < 49){
-          products.push(genArticle(index+1, productName, productPrice, productImage, `Name: ${'`'+productName+'`'} \nPrice: ${'`'+productPrice+'`'} \nLink: [AMAZON LINK](${productLink})`))
+          products.push(genArticle(index+1, name, price, image, `Name: ${'`'+name+'`'} \nPrice: ${'`'+price+'`'} \nLink: [AMAZON LINK](${link}?tag=affanthebest-21)`))
         }
       })
       return await ctx.answerInlineQuery(products)
